@@ -31,78 +31,281 @@
   margin: 5px 0;
 }
 
-.close-button {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #007BFF;
-  color: white;
+/* Bottom Slide-Up Modal Styles - WCAG AA Accessible */
+.modal-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1001;
+}
+
+/* Large screen styles - slide in from right */
+@media (min-width: 1024px) {
+  .modal-content {
+    position: fixed;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    top: 0;
+    width: 25%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0 0 0 16px;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  .modal-body {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #d1d5db;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  border-radius: 16px 16px 0 0;
+}
+
+/* Large screen header styles */
+@media (min-width: 1024px) {
+  .modal-header {
+    border-radius: 0;
+    padding: 16px 20px;
+  }
+
+  .modal-header .city-name {
+    font-size: 20px;
+  }
+
+  .modal-close-button {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.modal-header .city-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  flex: 1;
+}
+
+.modal-close-button {
+  background: none;
   border: none;
-  border-radius: 4px;
+  font-size: 28px;
+  color: #1f2937;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.close-button:hover {
-  background-color: #0056b3;
+.modal-close-button:hover {
+  background-color: #e5e7eb;
+  color: #111827;
 }
 
-.close-button:focus {
-  outline: 2px solid #005099;
+.modal-close-button:focus {
+  outline: 3px solid #2563eb;
   outline-offset: 2px;
+  background-color: #e5e7eb;
+}
+
+.modal-close-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.modal-close-button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+  background-color: #e5e7eb;
+}
+
+.modal-body {
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Updated city info styling for modal */
+.modal-content .city-description {
+  font-size: 15px;
+  color: #1f2937;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.info-heading {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.modal-content .city-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #d1d5db;
+}
+
+.modal-content .city-info p {
+  font-size: 14px;
+  color: #374151;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.modal-content .city-info strong {
+  color: #111827;
+  font-weight: 600;
 }
 
 /* Mobile-first responsive styles */
 @media (max-width: 768px) {
-  .info-window-content {
-    padding: 10px;
-    max-width: 280px;
+  .modal-content {
+    max-height: 85vh;
   }
 
-  .city-name {
-    font-size: 18px;
+  .modal-header {
+    padding: 16px;
   }
 
-  .city-description {
+  .modal-header .city-name {
+    font-size: 20px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-content .city-description {
+    font-size: 14px;
+  }
+
+  .modal-content .city-info p {
     font-size: 13px;
   }
 
-  .city-info {
-    font-size: 12px;
-  }
-
-  .close-button {
-    width: 100%;
-    padding: 10px 8px;
-    font-size: 13px;
+  .modal-close-button {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
   }
 }
 
 @media (max-width: 480px) {
-  .info-window-content {
-    padding: 8px;
-    max-width: 260px;
+  .modal-content {
+    max-height: 90vh;
   }
 
-  .city-name {
-    font-size: 16px;
-    margin-bottom: 8px;
+  .modal-header {
+    padding: 12px 16px;
+    gap: 8px;
   }
 
-  .city-description {
+  .modal-header .city-name {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: 12px 16px;
+  }
+
+  .modal-content .city-description {
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .modal-content .city-info {
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+
+  .modal-content .city-info p {
     font-size: 12px;
-    margin: 8px 0;
-  }
-
-  .city-info {
-    font-size: 11px;
     margin: 10px 0;
   }
 
-  .close-button {
-    margin-top: 8px;
-    padding: 8px 12px;
-    font-size: 12px;
+  .modal-close-button {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-content {
+    animation: none;
   }
 }

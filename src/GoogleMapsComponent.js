@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { GoogleMap, LoadScript, InfoWindow, Polyline } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Polyline } from '@react-google-maps/api';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import './GoogleMapsComponent.css';
 
@@ -306,9 +306,9 @@ const GoogleMapsComponent = () => {
                         // Or decrease to 30 pixels (smaller clusters, less spacing)
         },
         renderer: {
-          render: ({ count, position }) => {
+          render: ({ count, position, markers: clusterMarkers }) => {
             const color = count > 50 ? '#ff4444' : count > 20 ? '#ff9944' : '#2d62abff';
-            return new window.google.maps.Marker({
+            const clusterMarker = new window.google.maps.Marker({
               label: {
                 text: String(count),
                 color: 'white',
@@ -324,13 +324,25 @@ const GoogleMapsComponent = () => {
                 strokeColor: 'white',
                 strokeWeight: 2
               },
-              title: `${count} locations`
+              title: `${count} locations`,
+              cursor: 'pointer'
             });
+
+            // Add click listener to cluster marker to zoom in
+            clusterMarker.addListener('click', () => {
+              const bounds = new window.google.maps.LatLngBounds();
+              clusterMarkers.forEach(marker => {
+                bounds.extend(marker.getPosition());
+              });
+              map.fitBounds(bounds, 50);
+            });
+
+            return clusterMarker;
           }
         }
       });
 
-      // Add click listeners to markers
+      // Add click listeners to individual markers
       markers.forEach((marker, index) => {
         const location = ALL_LOCATIONS[index];
         marker.addListener('click', () => {
@@ -341,9 +353,33 @@ const GoogleMapsComponent = () => {
     }
   }, []);
 
+  const modalRef = useRef(null);
+  const closeButtonRef = useRef(null);
+
   const handleCloseInfo = useCallback(() => {
     setSelectedCity(null);
   }, []);
+
+  // Handle ESC key press to close modal and manage focus
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        handleCloseInfo();
+      }
+    };
+
+    if (selectedCity) {
+      window.addEventListener('keydown', handleKeyDown);
+      // Focus the close button when modal opens for better accessibility
+      setTimeout(() => closeButtonRef.current?.focus(), 100);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [selectedCity, handleCloseInfo]);
 
   return (
     <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
@@ -382,29 +418,44 @@ const GoogleMapsComponent = () => {
           />
         ))}
 
-        {/* Info Window - shows when marker is clicked */}
+        {/* Bottom Slide-Up Modal - shows when marker is clicked */}
         {selectedCity && (
-          <InfoWindow
-            position={{ lat: selectedCity.lat, lng: selectedCity.lng }}
-            onCloseClick={handleCloseInfo}
-          >
-            <div className="info-window-content" role="region" aria-label={`Information about ${selectedCity.name}`}>
-              <h3 className="city-name">{selectedCity.name}</h3>
-              <p className="city-description">{selectedCity.description}</p>
-              <div className="city-info">
-                {selectedCity.population && <p><strong>Population:</strong> {selectedCity.population}</p>}
-                <p><strong>Type:</strong> {selectedCity.type}</p>
-                <p><strong>Coordinates:</strong> {selectedCity.lat.toFixed(4)}°N, {Math.abs(selectedCity.lng).toFixed(4)}°W</p>
+          <div className="modal-overlay" onClick={handleCloseInfo} role="presentation" aria-hidden="false">
+            <div 
+              ref={modalRef}
+              className="modal-content" 
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
+              aria-describedby="modal-description"
+            >
+              <div className="modal-header">
+                <h2 id="modal-title" className="city-name">{selectedCity.name}</h2>
+                <button 
+                  ref={closeButtonRef}
+                  className="modal-close-button"
+                  onClick={handleCloseInfo}
+                  aria-label={`Close ${selectedCity.name} information (Press Escape to close)`}
+                  title="Close (Escape key)"
+                  type="button"
+                >
+                  <span aria-hidden="true">×</span>
+                </button>
               </div>
-              <button 
-                className="close-button"
-                onClick={handleCloseInfo}
-                aria-label={`Close information window for ${selectedCity.name}`}
-              >
-                Close
-              </button>
+              <div className="modal-body" id="modal-description">
+                <p className="city-description">{selectedCity.description}</p>
+                <section className="city-info" aria-label="Location details">
+                  <h3 className="info-heading">Details</h3>
+                  {selectedCity.population && (
+                    <p><strong>Population:</strong> <span>{selectedCity.population}</span></p>
+                  )}
+                  <p><strong>Type:</strong> <span>{selectedCity.type}</span></p>
+                  <p><strong>Coordinates:</strong> <span>{selectedCity.lat.toFixed(4)}°N, {Math.abs(selectedCity.lng).toFixed(4)}°W</span></p>
+                </section>
+              </div>
             </div>
-          </InfoWindow>
+          </div>
         )}
       </GoogleMap>
     </LoadScript>
