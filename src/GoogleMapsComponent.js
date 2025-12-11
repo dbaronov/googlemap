@@ -301,14 +301,14 @@ const GoogleMapsComponent = () => {
       clusterRef.current = new MarkerClusterer({
         map,
         markers,
-          algorithmOptions: {
-            radius: 300 // Increase to 120 pixels (larger clusters, more spacing)
+        algorithmOptions: {
+            radius: 120 // Increase to 120 pixels (larger clusters, more spacing)
                         // Or decrease to 30 pixels (smaller clusters, less spacing)
         },
         renderer: {
-          render: ({ count, position, markers: clusterMarkers }) => {
+          render: ({ count, position }) => {
             const color = count > 50 ? '#ff4444' : count > 20 ? '#ff9944' : '#2d62abff';
-            const clusterMarker = new window.google.maps.Marker({
+            return new window.google.maps.Marker({
               label: {
                 text: String(count),
                 color: 'white',
@@ -324,25 +324,13 @@ const GoogleMapsComponent = () => {
                 strokeColor: 'white',
                 strokeWeight: 2
               },
-              title: `${count} locations`,
-              cursor: 'pointer'
+              title: `${count} locations`
             });
-
-            // Add click listener to cluster marker to zoom in
-            clusterMarker.addListener('click', () => {
-              const bounds = new window.google.maps.LatLngBounds();
-              clusterMarkers.forEach(marker => {
-                bounds.extend(marker.getPosition());
-              });
-              map.fitBounds(bounds, 50);
-            });
-
-            return clusterMarker;
           }
         }
       });
 
-      // Add click listeners to individual markers
+      // Add click listeners to markers
       markers.forEach((marker, index) => {
         const location = ALL_LOCATIONS[index];
         marker.addListener('click', () => {
