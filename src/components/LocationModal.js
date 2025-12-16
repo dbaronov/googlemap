@@ -2,6 +2,22 @@ import React, { useRef, useEffect } from 'react';
 import { useMap } from '../context/MapContext';
 import '../GoogleMapsComponent.css';
 
+// Severity levels for different incident types
+const INCIDENT_SEVERITY = {
+  sewage: { level: 'critical', color: '#DC2626', label: 'Critical' },
+  flooding: { level: 'critical', color: '#DC2626', label: 'Critical' },
+  pollution: { level: 'high', color: '#EA580C', label: 'High' },
+  leak: { level: 'high', color: '#EA580C', label: 'High' },
+  pressure: { level: 'medium', color: '#F59E0B', label: 'Medium' },
+  smell: { level: 'medium', color: '#F59E0B', label: 'Medium' },
+  drain: { level: 'low', color: '#10B981', label: 'Low' },
+  other: { level: 'low', color: '#6B7280', label: 'Low' }
+};
+
+const formatIncidentType = (incident) => {
+  return incident.charAt(0).toUpperCase() + incident.slice(1);
+};
+
 const LocationModal = () => {
   const { selectedCity, closeInfo } = useMap();
   const modalRef = useRef(null);
@@ -29,6 +45,8 @@ const LocationModal = () => {
   }, [selectedCity, closeInfo]);
 
   if (!selectedCity) return null;
+
+  const severity = INCIDENT_SEVERITY[selectedCity.incident] || INCIDENT_SEVERITY.other;
 
   return (
     <div className="modal-overlay" onClick={closeInfo} role="presentation" aria-hidden="false">
@@ -64,6 +82,24 @@ const LocationModal = () => {
             <p><strong>Type:</strong> <span>{selectedCity.type}</span></p>
             <p><strong>Coordinates:</strong> <span>{selectedCity.lat.toFixed(4)}°N, {Math.abs(selectedCity.lng).toFixed(4)}°W</span></p>
           </section>
+          {selectedCity.incident && (
+            <section className="incident-info" aria-label="Incident information">
+              <h3 className="info-heading">Incident Report</h3>
+              <p><strong>Type:</strong> <span>{formatIncidentType(selectedCity.incident)}</span></p>
+              <p>
+                <strong>Severity:</strong> 
+                <span 
+                  style={{ 
+                    color: severity.color, 
+                    fontWeight: 'bold',
+                    marginLeft: '8px'
+                  }}
+                >
+                  {severity.label}
+                </span>
+              </p>
+            </section>
+          )}
         </div>
       </div>
     </div>

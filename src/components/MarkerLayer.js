@@ -3,6 +3,31 @@ import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { useMap } from '../context/MapContext';
 import { LOCATIONS } from '../data/locations';
 
+// Severity levels and colors for different incident types
+const INCIDENT_SEVERITY = {
+  sewage: { level: 'critical', color: '#DC2626', label: 'Critical' },      // Red
+  flooding: { level: 'critical', color: '#DC2626', label: 'Critical' },    // Red
+  pollution: { level: 'high', color: '#EA580C', label: 'High' },          // Orange-red
+  leak: { level: 'high', color: '#EA580C', label: 'High' },               // Orange-red
+  pressure: { level: 'medium', color: '#F59E0B', label: 'Medium' },       // Amber
+  smell: { level: 'medium', color: '#F59E0B', label: 'Medium' },          // Amber
+  drain: { level: 'low', color: '#10B981', label: 'Low' },                // Green
+  other: { level: 'low', color: '#6B7280', label: 'Low' }                 // Gray
+};
+
+const getMarkerIcon = (incident) => {
+  const severity = INCIDENT_SEVERITY[incident] || INCIDENT_SEVERITY.other;
+  
+  return {
+    path: window.google.maps.SymbolPath.CIRCLE,
+    scale: 12,
+    fillColor: severity.color,
+    fillOpacity: 0.9,
+    strokeColor: '#FFFFFF',
+    strokeWeight: 2
+  };
+};
+
 const MarkerLayer = () => {
   const { mapRef, setSelectedCity } = useMap();
   const markersRef = useRef([]);
@@ -15,11 +40,12 @@ const MarkerLayer = () => {
   useEffect(() => {
     if (!mapRef) return;
 
-    // Create marker objects for all locations
+    // Create marker objects for all locations with colored icons
     const markers = LOCATIONS.map(location => 
       new window.google.maps.Marker({
         position: { lat: location.lat, lng: location.lng },
-        title: location.name
+        title: location.name,
+        icon: getMarkerIcon(location.incident)
       })
     );
 
