@@ -74,32 +74,48 @@ const LocationModal = () => {
         </div>
         <div className="modal-body" id="modal-description">
           <p className="city-description">{selectedCity.description}</p>
-          <section className="city-info" aria-label="Location details">
-            <h3 className="info-heading">Details</h3>
-            {selectedCity.population && (
-              <p><strong>Population:</strong> <span>{selectedCity.population}</span></p>
-            )}
-            <p><strong>Type:</strong> <span>{selectedCity.type}</span></p>
-            <p><strong>Coordinates:</strong> <span>{selectedCity.lat.toFixed(4)}°N, {Math.abs(selectedCity.lng).toFixed(4)}°W</span></p>
-          </section>
+          
           {selectedCity.incident && (
-            <section className="incident-info" aria-label="Incident information">
-              <h3 className="info-heading">Incident Report</h3>
-              <p><strong>Type:</strong> <span>{formatIncidentType(selectedCity.incident)}</span></p>
-              <p>
-                <strong>Severity:</strong> 
+            <div className="incident-alert" style={{ borderLeftColor: severity.color }}>
+              <div className="incident-header">
                 <span 
-                  style={{ 
-                    color: severity.color, 
-                    fontWeight: 'bold',
-                    marginLeft: '8px'
-                  }}
+                  className="severity-badge"
+                  style={{ backgroundColor: severity.color }}
                 >
                   {severity.label}
                 </span>
-              </p>
-            </section>
+                <span className="incident-type">{formatIncidentType(selectedCity.incident)} Incident</span>
+              </div>
+            </div>
           )}
+
+          <div className="details-grid">
+            <div className="detail-item">
+              <div className="detail-icon">📍</div>
+              <div className="detail-content">
+                <div className="detail-label">Location Type</div>
+                <div className="detail-value">{selectedCity.type.charAt(0).toUpperCase() + selectedCity.type.slice(1)}</div>
+              </div>
+            </div>
+
+            {selectedCity.population && (
+              <div className="detail-item">
+                <div className="detail-icon">👥</div>
+                <div className="detail-content">
+                  <div className="detail-label">Population</div>
+                  <div className="detail-value">{selectedCity.population}</div>
+                </div>
+              </div>
+            )}
+
+            <div className="detail-item">
+              <div className="detail-icon">🌍</div>
+              <div className="detail-content">
+                <div className="detail-label">Coordinates</div>
+                <div className="detail-value">{selectedCity.lat.toFixed(4)}°N, {Math.abs(selectedCity.lng).toFixed(4)}°W</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
