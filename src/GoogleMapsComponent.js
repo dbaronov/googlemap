@@ -5,8 +5,9 @@ import './GoogleMapsComponent.css';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCJcQHAjA6-T_u8VrhAxxdeRZ-3c037qIU';
 
-// Major cities in Yorkshire and The Humber with coordinates
-const CITIES = [
+// All locations in Yorkshire and The Humber (cities, towns, villages)
+const LOCATIONS = [
+  // Major cities
   {
     id: 1,
     name: 'Leeds',
@@ -78,11 +79,9 @@ const CITIES = [
     description: 'Historic spa town and major tourist destination in North Yorkshire.',
     population: '80,000',
     type: 'city'
-  }
-];
-
-// Additional 100+ locations (towns, villages, landmarks) across Yorkshire and Humber
-const ADDITIONAL_LOCATIONS = [
+  },
+  
+  // Towns and villages
   // West Yorkshire towns
   { id: 9, name: 'Huddersfield', lat: 53.6456, lng: -1.7862, type: 'town', description: 'Historic textile town', population: '146,000' },
   { id: 10, name: 'Castleford', lat: 53.7211, lng: -1.2902, type: 'town', description: 'Historic market town', population: '38,000' },
@@ -195,9 +194,6 @@ const ADDITIONAL_LOCATIONS = [
   { id: 105, name: 'Robin Hood Bay', lat: 54.4234, lng: -0.5234, type: 'village', description: 'Coastal village', population: '2,000' }
 ];
 
-// Combine all locations
-const ALL_LOCATIONS = [...CITIES, ...ADDITIONAL_LOCATIONS];
-
 const BOUNDARY_OPTIONS = {
   strokeColor: '#837fd3ff',
   strokeOpacity: 1,
@@ -272,9 +268,9 @@ const GoogleMapsComponent = () => {
         });
       });
 
-      // Include all cities in bounds
-      CITIES.forEach(city => {
-        bounds.extend({ lat: city.lat, lng: city.lng });
+      // Include all locations in bounds
+      LOCATIONS.forEach(location => {
+        bounds.extend({ lat: location.lat, lng: location.lng });
       });
 
       if (!bounds.isEmpty()) {
@@ -287,7 +283,7 @@ const GoogleMapsComponent = () => {
     setMapRef(map);
 
     // Create marker objects for all locations
-    const markers = ALL_LOCATIONS.map(location => 
+    const markers = LOCATIONS.map(location => 
       new window.google.maps.Marker({
         position: { lat: location.lat, lng: location.lng },
         title: location.name
@@ -332,7 +328,7 @@ const GoogleMapsComponent = () => {
 
       // Add click listeners to markers
       markers.forEach((marker, index) => {
-        const location = ALL_LOCATIONS[index];
+        const location = LOCATIONS[index];
         marker.addListener('click', () => {
           setSelectedCity(location);
           map.panTo(marker.getPosition());
