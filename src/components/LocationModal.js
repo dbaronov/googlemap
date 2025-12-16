@@ -10,7 +10,7 @@ const INCIDENT_SEVERITY = {
   leak: { level: 'high', color: '#EA580C', label: 'High' },
   pressure: { level: 'medium', color: '#F59E0B', label: 'Medium' },
   smell: { level: 'medium', color: '#F59E0B', label: 'Medium' },
-  drain: { level: 'low', color: '#10B981', label: 'Low' },
+  drain: { level: 'low', color: '#6B7280', label: 'Low' },
   other: { level: 'low', color: '#6B7280', label: 'Low' }
 };
 
