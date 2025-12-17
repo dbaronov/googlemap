@@ -57,7 +57,7 @@ const MarkerLayer = () => {
         map: mapRef,
         markers,
         algorithmOptions: {
-          radius: 120
+          radius: 225, // 120 pixels
         },
         renderer: {
           render: ({ count, position }) => {
